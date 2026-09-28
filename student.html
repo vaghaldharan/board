@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="gu" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Student</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg">
+<meta name="theme-color" content="#0b1220">
+<!-- © 2026 · All rights reserved.
+     This page is only a loader. The app is licensed per school and delivered by the
+     server after registration. Copying or redistributing is not permitted. -->
+<style>
+  :root{--bg:#070b14;--card:#0f172a;--line:#26324a;--ink:#e5e7eb;--dim:#94a3b8;--green:#22c55e;--violet:#a78bfa;--blue:#60a5fa}
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;background:radial-gradient(1200px 700px at 50% 0,#10204a 0,var(--bg) 60%);color:var(--ink);
+    font-family:"Noto Sans Gujarati","Shruti","Nirmala UI",system-ui,sans-serif}
+  .wrap{max-width:720px;margin:0 auto;padding:28px 18px 60px}
+  .logo{text-align:center;margin:10px 0 18px}
+  .logo .e{font-size:54px}.logo h1{margin:4px 0 2px;font-size:30px;letter-spacing:.5px}.logo p{margin:0;color:var(--dim)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:12px 0}
+  .big{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .choice{background:#0b1220;border:2px solid var(--c,#334155);border-radius:16px;padding:20px 14px;color:var(--ink);cursor:pointer;text-align:center;font:inherit}
+  .choice .i{font-size:40px}.choice b{display:block;font-size:19px;margin-top:6px}.choice small{color:var(--dim);display:block;margin-top:4px;line-height:1.45}
+  .choice em{display:block;font-style:normal;color:#93c5fd;font-size:13px;margin-top:2px}
+  .choice small i{display:block;font-style:normal;color:#7dd3fc;font-size:12px;margin-top:2px}
+  label{display:block;color:var(--dim);font-size:14px;margin:10px 0 4px}
+  input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #334155;background:#0b1220;color:var(--ink);font:inherit;font-size:17px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .btn{display:block;width:100%;margin-top:14px;padding:14px;border-radius:14px;border:0;background:var(--green);color:#052e16;font:inherit;font-size:18px;font-weight:800;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid #334155;color:var(--ink);font-weight:600;font-size:15px}
+  .msg{margin-top:10px;min-height:22px;color:#fca5a5}
+  .ok{color:#86efac}
+  .spin{width:46px;height:46px;border-radius:50%;border:4px solid #1e293b;border-top-color:var(--green);animation:sp 1s linear infinite;margin:18px auto}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .note{color:var(--dim);font-size:13px;text-align:center;margin-top:18px;line-height:1.6}
+  .terms{margin-top:12px}.tc{display:flex;gap:8px;align-items:flex-start;color:var(--ink);font-size:14px}.tc input{width:auto;margin-top:3px}.tc a{color:#93c5fd}
+  .tbody{margin-top:8px;padding:14px;border-radius:12px;background:#0b1220;border:1px solid #334155;font-size:13.5px;line-height:1.75;color:#cbd5e1;max-height:55vh;overflow:auto;text-align:left}.tbody i{color:#94a3b8;font-style:normal;display:block;margin-top:2px}.tbody h4{margin:0 0 8px;color:#fbbf24;font-size:16px}.tbody h5{margin:14px 0 4px;color:#93c5fd;font-size:14.5px}.tbody p{margin:0 0 6px}
+  .who{display:flex;gap:10px;align-items:center;background:#0b1220;border:1px solid #1f3a2a;border-radius:12px;padding:12px;margin-top:10px}
+</style>
+</head>
+<body oncontextmenu="return false">
+<script src="config.js"></script>
+<div class="wrap" id="app"><div class="logo"><div class="e">🎓</div><h1 id="appName">&nbsp;</h1><p>વિદ્યાર્થી · Student</p></div><div class="spin"></div></div>
+<script>
+/* ==========================================================================
+   LOADER (student)
+   The real app is NOT in this file. After login the master server
+   sends it; it is kept on this device and fetched again only when it changes.
+   ========================================================================== */
+var MASTER_URL=window.FG_MASTER_URL||'';  /* 👑 comes from config.js — the ONLY place the link is written */
+var ROLE='student';                      /* 'board' = teacher · 'student' = student file */
+var SKEY='fg_session_'+ROLE, CKEY='fg_cfg';
+var $=function(id){ return document.getElementById(id) };
+function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c] }) }
+function jget(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d }catch(e){ return d } }
+function jset(k,v){ try{ if(v==null) localStorage.removeItem(k); else localStorage.setItem(k,JSON.stringify(v)) }catch(e){} }
+var __n=0;
+function jp(action,params,cb,ms){
+  var name='__fg'+(++__n)+'_'+Date.now(), done=false, s=document.createElement('script'), q=['action='+encodeURIComponent(action)];
+  params=params||{}; for(var k in params) if(params[k]!=null) q.push(encodeURIComponent(k)+'='+encodeURIComponent(params[k]));
+  q.push('callback='+name);
+  window[name]=function(d){ if(done) return; done=true; cleanup(); cb(d||{ok:false}) };
+  function cleanup(){ try{ delete window[name] }catch(e){ window[name]=undefined } if(s.parentNode) s.parentNode.removeChild(s) }
+  s.onerror=function(){ if(done) return; done=true; cleanup(); cb({ok:false,error:'network'}) };
+  setTimeout(function(){ if(done) return; done=true; cleanup(); cb({ok:false,error:'timeout'}) }, ms||30000);
+  s.src=MASTER_URL+(MASTER_URL.indexOf('?')>=0?'&':'?')+q.join('&');
+  document.head.appendChild(s);
+}
+/* ---- code cache in IndexedDB (the app is ~2 MB) ---- */
+function idb(cb){ try{ var r=indexedDB.open('fg_app',1); r.onupgradeneeded=function(){ r.result.createObjectStore('kv') };
+  r.onsuccess=function(){ cb(r.result) }; r.onerror=function(){ cb(null) } }catch(e){ cb(null) } }
+function cacheGet(cb){ idb(function(db){ if(!db) return cb(null); try{ var t=db.transaction('kv','readonly').objectStore('kv').get('app');
+  t.onsuccess=function(){ cb(t.result||null) }; t.onerror=function(){ cb(null) } }catch(e){ cb(null) } }) }
+function cachePut(v){ idb(function(db){ if(!db) return; try{ db.transaction('kv','readwrite').objectStore('kv').put(v,'app') }catch(e){} }) }
+
+var ERR={'network':'ઇન્ટરનેટ નથી — જોડાણ તપાસો','timeout':'સર્વર જવાબ આપતું નથી — ફરી પ્રયત્ન કરો',
+  'udise-11-digits':'UDISE કોડ 11 અંકનો હોય છે','already-registered':'આ UDISE પહેલેથી નોંધાયેલો છે — "પ્રવેશ કરો" વાપરો (પાસવર્ડ શાળાના શિક્ષક પાસે)',
+  'school-not-registered':'આ UDISE ની શાળા નોંધાયેલી નથી','wrong-password':'પાસવર્ડ ખોટો છે','school-blocked':'આ શાળાનું જોડાણ બંધ છે — સંચાલકનો સંપર્ક કરો',
+  'fill-all':'બધી વિગત ભરો','password-4':'પાસવર્ડ ઓછામાં ઓછા 4 અક્ષરનો','registration-closed':'નવી નોંધણી હાલ બંધ છે',
+  'not-found':'આ ધોરણ અને રોલ નંબરનો વિદ્યાર્થી મળ્યો નહીં — નવી નોંધણી કરો','roll-taken':'આ ધોરણમાં આ રોલ નંબર પહેલેથી નોંધાયેલો છે — "રોલ નંબરથી પ્રવેશ" વાપરો',
+  'self-registration-closed':'જાતે નોંધણી હાલ બંધ છે — શિક્ષકને કહો','fill-class-roll-name':'ધોરણ, રોલ નંબર અને નામ ભરો',
+  'uid-needed':'PEN / APAAR ID જરૂરી','uid-exists':'આ PEN / APAAR ID પહેલેથી નોંધાયેલો છે — "મારી પ્રોફાઇલ શોધો" વાપરો',
+  'uid-other-school':'આ PEN / APAAR ID બીજી શાળામાં નોંધાયેલો છે — નવી શાળાના શિક્ષકને કહો',
+  'bad-token':'ફરી પ્રવેશ કરો','no-code-file':'સર્વર પર એપ હજી મૂકી નથી (BOARD CODE FILE ID)',
+  'email-needed':'સાચો ઇમેઇલ લખો — પાસવર્ડ ભૂલો તો કોડ ત્યાં આવશે','no-email':'આ શાળાનો ઇમેઇલ નોંધાયેલો નથી — સંચાલકને પાસવર્ડ બદલવા કહો',
+  'otp-wrong':'કોડ ખોટો છે','otp-expired':'કોડની મુદત પૂરી — ફરી કોડ મોકલો',
+  'username-taken':'આ યુઝરનેમ બીજા કોઈનું છે — બીજું પસંદ કરો · This username is taken','username-bad':'યુઝરનેમ: 3–20 અક્ષર (a-z, 0-9, _ .)',
+  'name-needed':'નામ લખો · Enter your name','visitor-closed':'મુલાકાતી પ્રવેશ હાલ બંધ છે'};
+function em(d){ return ERR[d&&d.error]||(d&&d.error)||'ભૂલ' }
+function APP(){ return (CFG&&CFG.appName)||'' }       /* 👑 name comes ONLY from the master sheet */
+function screen(html){ document.title=APP()+' · વિદ્યાર્થી · Student'; $('app').innerHTML='<div class="logo"><div class="e">🎓</div><h1>'+esc(APP())+'</h1><p>વિદ્યાર્થી · Student</p></div>'+html }
+function loading(t){ screen('<div class="spin"></div><p class="note">'+esc(t||'ખૂલે છે…')+'</p>') }
+
+/* ================================ START ================================ */
+var CFG=jget(CKEY,null);
+try{ $('appName').textContent=APP() }catch(e){}
+function start(){
+  var s=jget(SKEY,null);
+  if(s && CFG && !start.__bg){                 /* ⚡ fast path: open the saved copy at once, check the server in the background */
+    start.__bg=1;
+    return cacheGet(function(c){
+      if(!(c && c.code)) { start.__bg=2; return start() }
+      jp('boot',{udise:s.udise,tok:s.tok,sid:s.sid},function(b){
+        if(!(b && b.ok)) return;
+        jset(CKEY,b);
+        if((ROLE==='board' && !s.guest && b.teacher===false) || (b.school && b.school.status==='BLOCKED')){ jset(SKEY,null) }   /* next open asks again */
+        if(b.codeVersion && b.codeVersion!==c.v) fetchCode(s,function(){});   /* new version ready for the next open */
+      });
+      run(c.code,s);
+    });
+  }
+  loading('જોડાય છે… · Connecting…');
+  jp('boot', s?{udise:s.udise, tok:s.tok, sid:s.sid}:{}, function(b){
+    if(b && b.ok){ CFG=b; jset(CKEY,b) }
+    else if(!CFG){ screen('<div class="card"><b>⚠ '+esc(em(b))+'</b><button class="btn" onclick="start()">↻ ફરી</button></div>'); return }
+    if(ROLE==='board'){
+      if(!s) return schoolScreen();
+      if(s.guest) return load(s);
+      if(b && b.ok && b.school && b.school.status==='BLOCKED'){ jset(SKEY,null); return msg(ERR['school-blocked']) }
+      if(b && b.ok && b.teacher===false){ jset(SKEY,null); return schoolScreen('ફરી પ્રવેશ કરો (પાસવર્ડ બદલાયો હોઈ શકે)') }
+    } else {
+      if(!s) return studentScreen();
+      if(s.guest && CFG.visitor===false){ jset(SKEY,null); return studentScreen() }
+    }
+    load(s);
+  });
+}
+function msg(t){ screen('<div class="card"><b>'+esc(t)+'</b></div>') }
+
+/* ============================ TEACHER: SCHOOL ============================ */
+function schoolScreen(note){
+  screen('<div class="card">'+(note?'<div class="msg">'+esc(note)+'</div>':'')+
+    '<div class="big"><button class="choice" style="--c:#22c55e" onclick="schoolLogin()"><div class="i">🏫</div><b>શાળામાં પ્રવેશ</b><em>School login</em>'+
+      '<small>શાળા નોંધાયેલી છે — UDISE અને પાસવર્ડ<i>Already registered — UDISE code and password</i></small></button>'+
+    (CFG&&CFG.schoolReg===false?'':'<button class="choice" style="--c:#60a5fa" onclick="schoolRegister()"><div class="i">📝</div><b>નવી શાળા નોંધણી</b><em>Register a new school</em>'+
+      '<small>પહેલી વાર — UDISE, શાળા, તાલુકો, જિલ્લો<i>First time — UDISE, school, taluka, district</i></small></button>')+
+    '<button class="choice" style="--c:#f59e0b" onclick="boardGuest()"><div class="i">▶</div><b>નોંધણી વગર ખોલો</b><em>Open without registering</em>'+
+      '<small>ભણાવવા માટે બધું ચાલે — વિદ્યાર્થી યાદી અને રિપોર્ટ માટે નોંધણી જોઈએ<i>Teaching works fully — student list and reports need registration</i></small></button>'+
+    '</div></div><p class="note">© '+esc(APP())+' — દરેક શાળા માટે અલગ લાઇસન્સ. વિગત ફક્ત તમારી શાળા માટે વપરાય છે.</p>');
+}
+function T_(gu,en){ return '<p>'+gu+'<br><i>'+en+'</i></p>' }
+function TH_(n,gu,en){ return '<h5>'+n+'. '+gu+' · '+en+'</h5>' }
+var TERMS_COMMON=
+ TH_(1,'આ સેવા વિશે','About this service')+
+ T_('આ એક <b>ખાનગી શૈક્ષણિક સેવા</b> છે. તે ભારત સરકાર, ગુજરાત સરકાર, શિક્ષણ વિભાગ, સમગ્ર શિક્ષા કે કોઈ પણ સરકારી સંસ્થાની વેબસાઇટ, એપ કે યોજના <b>નથી</b>, અને તેમાંથી કોઈ સાથે સત્તાવાર રીતે જોડાયેલી નથી. UDISE કોડ, વિદ્યાર્થી UID અથવા APAAR ID ફક્ત ઓળખ માટે પૂછવામાં આવે છે.',
+    'This is a <b>private educational service</b>. It is <b>not</b> a website, app or scheme of the Government of India, the Government of Gujarat, the Education Department, Samagra Shiksha or any other public body, and it is not officially connected with any of them. UDISE codes, student UIDs and APAAR IDs are requested only for identification.')+
+ TH_(2,'કોણ વાપરી શકે','Who may use it')+
+ T_('શાળા, શિક્ષકો, વિદ્યાર્થીઓ અને વાલીઓ આ સેવા શીખવા-શીખવવા માટે વાપરી શકે છે. <b>18 વર્ષથી નાની ઉંમરના વિદ્યાર્થી</b> આ સેવા માત્ર વાલી (માતા-પિતા કે કાયદેસર સંરક્ષક) ની જાણ અને સંમતિથી જ વાપરે. શાળા દ્વારા ઉમેરાયેલા વિદ્યાર્થીઓ માટે વાલીની સંમતિ મેળવવાની જવાબદારી શાળાની રહેશે.',
+    'Schools, teachers, students and parents may use the service for teaching and learning. <b>Students under 18</b> may use it only with the knowledge and consent of a parent or lawful guardian. For students added by a school, the school is responsible for obtaining that consent.')+
+ TH_(3,'અમે કઈ માહિતી રાખીએ છીએ','What information we keep')+
+ T_('શાળાનું નામ, UDISE કોડ, તાલુકો, જિલ્લો, શિક્ષકનું નામ, મોબાઇલ અને ઇમેઇલ; વિદ્યાર્થીનું નામ, ધોરણ, રોલ નંબર, GR નંબર (હોય તો), UID / APAAR ID, માધ્યમ; તથા મહાવરા અને કસોટીનાં પરિણામ, ભૂલો, વાંચનની ઝડપ અને પ્રગતિ. મુલાકાતી માટે નામ અને યુઝરનેમ. અમે પાસવર્ડ ખુલ્લો રાખતા નથી — તેનું ગુપ્ત (hash) રૂપ જ સાચવીએ છીએ.',
+    'School name, UDISE code, taluka, district, teacher name, mobile and email; student name, class, roll number, GR number (if given), UID / APAAR ID and medium; and practice and test results, mistakes, reading speed and progress. For visitors, a name and username. Passwords are never stored in plain text — only a secure hash.')+
+ TH_(4,'માહિતીનો ઉપયોગ','How the information is used')+
+ T_('આ માહિતીનો ઉપયોગ સેવા ચલાવવા, વિદ્યાર્થીને યોગ્ય મોડ્યુલ બતાવવા, AI ટ્યુટર દ્વારા નબળા મુદ્દા શોધીને શીખવવા, શિક્ષક અને વિદ્યાર્થીને રિપોર્ટ બતાવવા, શાળા બદલાય ત્યારે વિદ્યાર્થીનો અભ્યાસ-ઇતિહાસ સાથે લઈ જવા, તથા સેવાની ગુણવત્તા સુધારવા માટે થાય છે. સામૂહિક અને નામ વગરના (anonymised) આંકડા સંશોધન અને સુધારણા માટે વાપરી શકાય છે.',
+    'The information is used to run the service, show each student the right modules, let the AI tutor find weak areas and teach them, show reports to teachers and students, carry a student\'s learning history to a new school, and improve the quality of the service. Aggregated, anonymised statistics may be used for research and improvement.')+
+ TH_(5,'માહિતી ક્યાં સચવાય છે અને કોણ જોઈ શકે','Where it is stored and who can see it')+
+ T_('માહિતી સેવા-સંચાલકના Google એકાઉન્ટમાં Google Sheets / Google Drive પર સચવાય છે. શાળાની માહિતી તે શાળાના પાસવર્ડ વડે જ ખૂલે છે. સેવા-સંચાલક સેવા ચલાવવા, મદદ કરવા અને ભૂલ સુધારવા માટે માહિતી જોઈ શકે છે. અમે યોગ્ય સાવચેતી રાખીએ છીએ, પરંતુ ઇન્ટરનેટ પર કોઈ પણ વ્યવસ્થા સંપૂર્ણ સુરક્ષિત હોવાની ખાતરી આપી શકાતી નથી.',
+    'Data is stored in Google Sheets / Google Drive under the service operator\'s Google account. A school\'s data opens only with that school\'s password. The operator can see data to run the service, give support and fix problems. We take reasonable care, but no system on the internet can be guaranteed to be completely secure.')+
+ TH_(6,'માહિતી આપવી','Sharing')+
+ T_('સેવા ચલાવવા જરૂરી સેવા-પ્રદાતાઓ (જેમ કે Google) સિવાય, અને કાયદા મુજબ ફરજિયાત હોય ત્યારે સિવાય, વ્યક્તિગત માહિતી બીજા કોઈને આપવામાં આવશે નહીં. ભવિષ્યમાં સેવા કે તેનો વ્યવસાય બીજી સંસ્થાને સોંપાય તો માહિતી આ જ શરતો સાથે નવી સંસ્થાને સોંપાઈ શકે; તે પહેલાં વપરાશકર્તાઓને જાણ કરવામાં આવશે.',
+    'Personal data is not given to anyone except the service providers needed to run the service (such as Google) and where the law requires it. If the service or its business is transferred to another organisation in future, the data may be transferred under these same terms; users will be informed before that happens.')+
+ TH_(7,'ફી','Fees')+
+ T_('આજે મોટા ભાગની સુવિધા મફત છે. ભવિષ્યમાં અમુક કે બધી સુવિધા (જેમ કે AI વ્યક્તિગત ટ્યુટર) માટે ફી લેવાઈ શકે. ફી શરૂ થાય તે પહેલાં જાણ કરવામાં આવશે; ફી ન ભરવી હોય તો તમે સેવા વાપરવાનું બંધ કરી શકો.',
+    'Most features are free today. Some or all features (such as the AI personal tutor) may become paid in future. You will be told before any fee starts; if you do not wish to pay, you may stop using the service.')+
+ TH_(8,'તમારી જવાબદારી','Your responsibilities')+
+ T_('સાચી માહિતી આપો, પાસવર્ડ ગુપ્ત રાખો, બીજા કોઈની ઓળખ વાપરશો નહીં, અને સેવાનો કોડ, સામગ્રી કે ડિઝાઇન નકલ કરવા, વેચવા કે બીજે મૂકવાનો પ્રયત્ન કરશો નહીં. સેવાની સામગ્રી અને સોફ્ટવેર તેના માલિકની મિલકત છે.',
+    'Give correct information, keep your password secret, do not use anyone else\'s identity, and do not copy, sell or republish the service\'s code, content or design. The content and software of the service remain the property of its owner.')+
+ TH_(9,'તમારા અધિકાર','Your rights')+
+ T_('તમે તમારી માહિતી જોવા, સુધારવા અથવા કાઢી નાખવા વિનંતી કરી શકો છો. શાળા તેના વિદ્યાર્થીની માહિતી બોર્ડમાંથી સુધારી શકે છે. કાયદાકીય રીતે રાખવી જરૂરી ન હોય એવી માહિતી વિનંતી મુજબ કાઢી નાખવામાં આવશે.',
+    'You may ask to see, correct or delete your information. A school can correct its students\' details from the board. Information not required to be kept by law will be deleted on request.')+
+ TH_(10,'સેવામાં ફેરફાર અને મર્યાદા','Changes and limits')+
+ T_('સેવા "જેમ છે તેમ" આપવામાં આવે છે. તે હંમેશા ચાલુ રહેશે કે ભૂલ વગરની રહેશે એવી ખાતરી નથી. સુવિધા, સામગ્રી અને આ શરતોમાં સમયાંતરે ફેરફાર થઈ શકે; મોટા ફેરફારની જાણ કરવામાં આવશે. નિયમ ભંગ થાય તો કોઈ ખાતું કે શાળાનું જોડાણ બંધ કરી શકાય.',
+    'The service is provided "as is", without a guarantee that it will always be available or error-free. Features, content and these terms may change from time to time; important changes will be announced. An account or a school\'s access may be suspended if these terms are broken.')+
+ TH_(11,'કાયદો','Law')+
+ T_('આ શરતો ભારતના કાયદા, ખાસ કરીને ડિજિટલ પર્સનલ ડેટા પ્રોટેક્શન કાયદો 2023, હેઠળ છે. કોઈ વિવાદ માટે ગુજરાતની અદાલતોનું અધિકારક્ષેત્ર રહેશે.',
+    'These terms are governed by the laws of India, including the Digital Personal Data Protection Act, 2023. Courts in Gujarat shall have jurisdiction over any dispute.');
+var TERMS_DEF={
+ school:'<h4>શાળા માટે નિયમો અને શરતો · Terms and Conditions for Schools</h4>'+TERMS_COMMON+
+   TH_(12,'શાળાની સંમતિ','School\'s agreement')+
+   T_('"સ્વીકારું છું" પસંદ કરીને તમે જાહેર કરો છો કે તમે શાળા વતી આ સેવા વાપરવા અધિકૃત છો, વિદ્યાર્થીઓની માહિતી ઉમેરતાં પહેલાં વાલીઓની સંમતિ મેળવશો, અને ઉપરના બધા નિયમો સ્વીકારો છો.',
+      'By choosing "I accept" you confirm that you are authorised to use this service on behalf of the school, that you will obtain parents\' consent before adding students\' details, and that you accept all the terms above.'),
+ student:'<h4>વિદ્યાર્થી અને મુલાકાતી માટે નિયમો અને શરતો · Terms and Conditions for Students and Visitors</h4>'+TERMS_COMMON+
+   TH_(12,'તમારી સંમતિ','Your agreement')+
+   T_('"સ્વીકારું છું" પસંદ કરીને તમે જાહેર કરો છો કે તમે આ શરતો વાંચી છે; તમારી ઉંમર 18 વર્ષથી ઓછી હોય તો તમારા વાલીએ પણ આ શરતો વાંચીને સંમતિ આપી છે.',
+      'By choosing "I accept" you confirm that you have read these terms and, if you are under 18, that your parent or guardian has also read them and agrees.')
+};
+
+function termsBox(kind){
+  var txt=(CFG&&(kind==='school'?CFG.termsSchool:CFG.termsStudent))||TERMS_DEF[kind];
+  return '<div class="terms"><label class="tc"><input type="checkbox" id="agree"> <span>મેં <a href="#" id="tLink">શરતો</a> વાંચી છે અને સ્વીકારું છું · I have read and accept the <a href="#" id="tLink2">terms</a></span></label>'+
+    '<div class="tbody" id="tBody" style="display:none">'+txt+'</div></div>';
+}
+function wireTerms(){ ['tLink','tLink2'].forEach(function(id){ var a=$(id); if(a) a.onclick=function(e){ e.preventDefault(); var b=$('tBody'); b.style.display=b.style.display==='none'?'block':'none' } }) }
+function agreed(){ var c=$('agree'); if(c && !c.checked){ $('m').textContent='⚠ શરતો સ્વીકારો · Please accept the terms'; return false } return true }
+function medSel(){ return '<label>માધ્યમ · Medium</label><select id="med"><option value="gu">ગુજરાતી માધ્યમ · Gujarati medium</option><option value="en">અંગ્રેજી માધ્યમ · English medium</option></select>' }
+function boardGuest(){ jset(SKEY,{guest:true}); start() }
+function schoolLogin(){
+  screen('<div class="card"><b>🏫 શાળામાં પ્રવેશ · School login</b><label>UDISE કોડ (11 અંક) · UDISE code</label><input id="u" inputmode="numeric" maxlength="11">'+
+    '<label>શાળાનો પાસવર્ડ · School password</label><input id="pw" type="password"><div class="msg" id="m"></div>'+
+    '<button class="btn" id="go">▶ પ્રવેશ · Login</button>'+
+    '<button class="btn ghost" onclick="forgotPw()">🔑 પાસવર્ડ ભૂલી ગયા? · Forgot password?</button>'+
+    '<button class="btn ghost" onclick="schoolScreen()">← પાછા · Back</button></div>');
+  $('go').onclick=function(){ $('m').textContent='';
+    loadingBtn(this); jp('loginSchool',{udise:$('u').value.trim(),password:$('pw').value},function(d){
+      if(!d.ok){ $('m').textContent='⚠ '+em(d); resetBtn('go','▶ પ્રવેશ'); return }
+      jset(SKEY,{udise:d.school.udise,tok:d.token,name:d.school.name}); start() }) };
+}
+/* 🔑 forgot password — a 6-digit code goes to the school's email */
+function forgotPw(){
+  screen('<div class="card"><b>🔑 પાસવર્ડ ભૂલી ગયા? · Forgot password</b>'+
+    '<label>UDISE કોડ · UDISE code</label><input id="u" inputmode="numeric" maxlength="11"><div class="msg" id="m"></div>'+
+    '<button class="btn" id="go">📧 કોડ મોકલો · Send code</button><button class="btn ghost" onclick="schoolLogin()">← પાછા · Back</button></div>');
+  $('go').onclick=function(){ var u=$('u').value.replace(/\D/g,''); $('m').textContent='';
+    loadingBtn(this); jp('forgotStart',{udise:u},function(d){
+      if(!d.ok){ resetBtn('go','📧 કોડ મોકલો · Send code'); $('m').innerHTML='⚠ '+esc(em(d)); return }
+      screen('<div class="card"><b>🔑 નવો પાસવર્ડ · New password</b><p class="ok">📧 કોડ મોકલ્યો: '+esc(d.sentTo)+' · Code sent</p>'+
+        '<label>ઇમેઇલમાં આવેલો 6 અંકનો કોડ · 6-digit code</label><input id="o" inputmode="numeric" maxlength="6">'+
+        '<label>નવો પાસવર્ડ · New password</label><input id="pw" type="password"><div class="msg" id="m"></div>'+
+        '<button class="btn" id="go">✅ પાસવર્ડ બદલો · Change</button><button class="btn ghost" onclick="schoolLogin()">← પાછા · Back</button></div>');
+      $('go').onclick=function(){ $('m').textContent=''; loadingBtn(this);
+        jp('forgotReset',{udise:u,otp:$('o').value.trim(),password:$('pw').value},function(r){
+          if(!r.ok){ resetBtn('go','✅ પાસવર્ડ બદલો · Change'); $('m').textContent='⚠ '+em(r); return }
+          jset(SKEY,{udise:r.school.udise,tok:r.token,name:r.school.name}); start() }) };
+    }) };
+}
+function schoolRegister(){
+  screen('<div class="card"><b>📝 નવી શાળા નોંધણી · Register a school</b>'+
+    '<label>UDISE કોડ (11 અંક) · UDISE code</label><input id="u" inputmode="numeric" maxlength="11">'+
+    '<label>શાળાનું નામ · School name</label><input id="n">'+
+    '<div class="row"><div><label>તાલુકો · Taluka</label><input id="t"></div><div><label>જિલ્લો · District</label><input id="d"></div></div>'+
+    '<div class="row"><div><label>શિક્ષકનું નામ · Teacher</label><input id="te"></div><div><label>મોબાઇલ · Mobile</label><input id="mo" inputmode="tel" maxlength="10"></div></div>'+
+    '<label>ઇમેઇલ (પાસવર્ડ ભૂલો તો કોડ અહીં આવે) · Email for password reset</label><input id="em" type="email">'+
+    medSel()+'<label>શાળા માટે પાસવર્ડ બનાવો (બીજા શિક્ષકો આ જ વાપરશે) · School password</label><input id="pw" type="password">'+
+    termsBox('school')+'<div class="msg" id="m"></div><button class="btn" id="go">✅ નોંધણી કરો · Register</button><button class="btn ghost" onclick="schoolScreen()">← પાછા · Back</button></div>');
+  wireTerms();
+  $('go').onclick=function(){ $('m').textContent=''; var v=function(i){ return $(i).value.trim() };
+    if(!agreed()) return;
+    loadingBtn(this); jp('registerSchool',{medium:$('med').value,udise:v('u'),name:v('n'),taluka:v('t'),district:v('d'),teacher:v('te'),mobile:v('mo'),email:v('em'),password:$('pw').value},function(d){
+      if(!d.ok){ $('m').textContent='⚠ '+em(d); resetBtn('go','✅ નોંધણી કરો · Register'); return }
+      jset(SKEY,{udise:d.school.udise,tok:d.token,name:d.school.name});
+      screen('<div class="card"><b class="ok">✅ '+esc(d.school.name)+' નોંધાઈ ગઈ</b><p>હવે બોર્ડમાં જમણી બાજુ 👥 <b>મારા વિદ્યાર્થી</b> બટનથી વિદ્યાર્થી ઉમેરો.<br>'+
+        'વિદ્યાર્થીઓને વિદ્યાર્થી ફાઇલની લિંક આપો — તેઓ UDISE <b>'+esc(d.school.udise)+'</b>, ધોરણ અને રોલ નંબરથી પ્રવેશ કરશે.</p>'+
+        '<button class="btn" onclick="start()">▶ બોર્ડ ખોલો</button></div>') }) };
+}
+
+/* ============================ STUDENT FILE ============================ */
+function studentScreen(){
+  screen('<div class="card"><div class="big">'+
+    '<button class="choice" style="--c:#22c55e" onclick="stuLogin()"><div class="i">🎓</div><b>મારી પ્રોફાઇલ શોધો</b><em>Find my profile</em>'+
+      '<small>શિક્ષકે તમારી નોંધણી કરી હોય તો<i>If your teacher has already registered you</i></small></button>'+
+    (CFG&&CFG.selfReg===false?'':'<button class="choice" style="--c:#60a5fa" onclick="stuRegister()"><div class="i">📝</div><b>જાતે નોંધણી કરો</b><em>Register myself</em>'+
+      '<small>તમારી શાળા આ બોર્ડ ન વાપરતી હોય તો — જાતે નોંધણી કરી શીખવાનું શરૂ કરો<i>If your school does not use this board — register yourself and start learning</i></small></button>')+
+    (CFG&&CFG.visitor===false?'':'<button class="choice" style="--c:#a78bfa" onclick="stuVisitor()"><div class="i">🙋</div><b>મુલાકાતી</b><em>Visitor</em>'+
+      '<small>ફક્ત નામ લખી જુઓ<i>Just type your name and explore</i></small></button>')+
+    '</div></div>'+(CFG&&CFG.message?'<div class="card">📢 '+esc(CFG.message)+'</div>':'')+
+    '<p class="note">© '+esc(APP())+'</p>');
+}
+function udiseRow(){ return '<label>શાળાનો UDISE કોડ (11 અંક) · School UDISE code</label><input id="u" inputmode="numeric" maxlength="11" value="'+esc((jget('fg_last_udise','')||''))+'">'+
+  '<div id="sn" class="note" style="text-align:left;margin-top:4px"></div>' }
+function watchUdise(){ var box=$('u'); function chk(){ var v=box.value.replace(/\D/g,''); $('sn').textContent='';
+    if(v.length===11) jp('schoolInfo',{udise:v},function(d){ $('sn').innerHTML=d.ok?('🏫 <b>'+esc(d.school.name)+'</b> · '+esc(d.school.taluka)+', '+esc(d.school.district)):'ℹ️ આ શાળા હજી નોંધાયેલી નથી — તો પણ તમે નવી નોંધણી કરી શકો' }) }
+  box.oninput=chk; chk() }
+function clsSel(){ var o=''; for(var c=1;c<=8;c++) o+='<option value="'+c+'"'+(c===7?' selected':'')+'>ધોરણ '+c+'</option>'; return '<select id="c">'+o+'</select>' }
+function stuLogin(){
+  screen('<div class="card"><b>🎓 મારી પ્રોફાઇલ શોધો · Find my profile</b>'+udiseRow()+'<div class="row"><div><label>ધોરણ · Class</label>'+clsSel()+'</div><div><label>રોલ નંબર · Roll no</label><input id="r" inputmode="numeric"></div></div>'+
+    '<div class="msg" id="m"></div><div id="who"></div><button class="btn" id="go">🔍 શોધો · Find</button><button class="btn ghost" onclick="studentScreen()">← પાછા · Back</button></div>');
+  watchUdise();
+  $('go').onclick=function(){ var u=$('u').value.replace(/\D/g,''), c=$('c').value, r=$('r').value.trim(); $('m').textContent='';
+    loadingBtn(this); jp('findStudent',{udise:u,cls:c,roll:r},function(d){ resetBtn('go','🔍 શોધો');
+      if(!d.ok){ $('m').textContent='⚠ '+em(d); return }
+      var s=d.student; jset('fg_last_udise',u);
+      $('who').innerHTML='<div class="who"><span style="font-size:32px">👦</span><div><b style="font-size:19px">'+esc(s.name)+'</b><br><small>'+esc(s.school||'')+' · ધોરણ '+esc(s.cls)+' · રોલ '+esc(s.roll)+'</small></div></div>';
+      $('go').textContent='✅ હા, આ હું છું · Yes, this is me'; $('go').onclick=function(){ jset(SKEY,{udise:s.udise,cls:s.cls,roll:s.roll,name:s.name,sid:s.id,school:s.school,medium:s.medium||'gu'}); start() } }) };
+}
+function stuRegister(){
+  screen('<div class="card"><b>📝 જાતે નોંધણી · Register myself</b>'+udiseRow()+'<label>શાળાનું નામ · School name</label><input id="sc">'+
+    '<div class="row"><div><label>ધોરણ · Class</label>'+clsSel()+'</div><div><label>રોલ નંબર · Roll no</label><input id="r" inputmode="numeric"></div></div>'+
+    '<label>તમારું પૂરું નામ · Full name</label><input id="n">'+
+    '<label>વિદ્યાર્થી UID (18 અંક, શાળા પાસેથી) અથવા APAAR ID (12 અંક) · Student UID or APAAR ID</label><input id="id" inputmode="numeric" style="font-family:monospace;letter-spacing:1px" placeholder="242401071041910103">'+
+    medSel()+termsBox('student')+
+    '<div class="msg" id="m"></div><button class="btn" id="go">✅ નોંધણી કરો · Register</button><button class="btn ghost" onclick="studentScreen()">← પાછા · Back</button></div>');
+  wireTerms();
+  watchUdise();
+  $('go').onclick=function(){ var v=function(i){ return $(i).value.trim() }; $('m').textContent='';
+    if(v('id').replace(/\s/g,'').length<4){ $('m').textContent='⚠ UID / APAAR ID લખો · Enter the UID / APAAR ID'; return }
+    if(!agreed()) return;
+    loadingBtn(this); jp('selfRegister',{udise:v('u').replace(/\D/g,''),school:v('sc'),cls:$('c').value,roll:v('r'),name:v('n'),uid:v('id'),medium:$('med').value},function(d){
+      if(!d.ok){ $('m').textContent='⚠ '+em(d); resetBtn('go','✅ નોંધણી કરો'); return }
+      var s=d.student; jset('fg_last_udise',s.udise);
+      jset(SKEY,{udise:s.udise,cls:s.cls,roll:s.roll,name:s.name,sid:s.id,school:s.school,indep:!!d.independent,medium:s.medium||'gu'});
+      screen('<div class="card"><b class="ok">✅ નોંધણી થઈ ગઈ</b><p>'+esc(s.name)+' · ધોરણ '+esc(s.cls)+' · રોલ '+esc(s.roll)+'<br>'+
+        'શાળા બદલો ત્યારે નવી શાળામાં તમારાં બધાં પરિણામ તમારા UID <b>'+esc(s.id)+'</b> થી આવશે.</p><button class="btn" onclick="start()">▶ ખોલો</button></div>') }) };
+}
+function stuVisitor(){
+  screen('<div class="card"><b>🙋 મુલાકાતી · Visitor</b><label>તમારું નામ · Your name</label><input id="n" maxlength="40">'+
+    '<label>યુઝરનેમ (કોઈ બીજાનું ન હોય — ફરી આવો ત્યારે આ જ લખો) · Username (unique — use it again next time)</label>'+
+    '<input id="un" maxlength="20" autocapitalize="none" placeholder="ravi_2026" style="font-family:monospace">'+
+    medSel()+termsBox('student')+'<div class="msg" id="m"></div>'+
+    '<button class="btn" id="go">▶ આગળ વધો · Continue</button><button class="btn ghost" onclick="studentScreen()">← પાછા · Back</button></div>');
+  wireTerms();
+  $('go').onclick=function(){ var n=$('n').value.trim(), un=$('un').value.trim().toLowerCase(); $('m').textContent='';
+    if(n.length<2){ $('m').textContent='⚠ નામ લખો · Enter your name'; return }
+    if(!/^[a-z0-9_.]{3,20}$/.test(un)){ $('m').textContent='⚠ યુઝરનેમ: 3–20 અક્ષર (a-z, 0-9, _ .) · Username: 3–20 letters/numbers'; return }
+    if(!agreed()) return;
+    loadingBtn(this); jp('visitor',{username:un,name:n},function(d){
+      if(!d.ok){ resetBtn('go','▶ આગળ વધો · Continue'); $('m').textContent='⚠ '+em(d); return }
+      jset(SKEY,{udise:'VISITOR',cls:'7',roll:'V-'+d.visitor.username,name:d.visitor.name,guest:true,medium:$('med').value}); start() }) };
+}
+function loadingBtn(b){ b.disabled=true; b.dataset.t=b.textContent; b.textContent='⏳ …' }
+function resetBtn(id,t){ var b=$(id); if(b){ b.disabled=false; b.textContent=t } }
+
+/* ============================ LOAD THE APP ============================ */
+function load(s){
+  loading('એપ ખૂલે છે…');
+  cacheGet(function(c){
+    var want=CFG&&CFG.codeVersion;
+    if(c && c.code && (!want || c.v===want)) return run(c.code,s);
+    loading(c?'નવું વર્ઝન આવે છે…':'પહેલી વાર એપ આવે છે (1–2 મિનિટ)…');
+    fetchCode(s,function(code,err){
+      if(code) return run(code,s);
+      if(c&&c.code) return run(c.code,s);
+      msg('⚠ '+em(err));
+    });
+  });
+}
+/* the app arrives compressed (≈4× smaller) where the browser can unpack it */
+function fetchCode(s,cb){
+  var gz=('DecompressionStream' in window)?'1':'';
+  jp('code',{role:ROLE,udise:s.udise,tok:s.tok,gz:gz},function(d){
+    if(!d.ok) return cb(null,d);
+    if(d.gz){
+      try{
+        var bin=atob(d.gz), u=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+        new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text().then(function(code){
+          cachePut({v:d.version,code:code}); cb(code) },function(){ cb(null,{error:'unpack'}) });
+      }catch(e){ cb(null,{error:'unpack'}) }
+      return;
+    }
+    cachePut({v:d.version,code:d.code}); cb(d.code);
+  },180000);
+}
+window.__FG_LOGOUT=function(){ jset(SKEY,null); try{ localStorage.removeItem('vrd_home_stu') }catch(e){} location.reload() };
+window.__FG_REGISTER=function(){ jset(SKEY,null); location.reload() };      /* board without registration → register / login now */
+function run(code,s){
+  window.__MASTER={url:MASTER_URL,cfg:CFG||{}};
+  if(ROLE==='board'){
+    window.__SCHOOL=s.guest?{guest:true}:{udise:s.udise,tok:s.tok,name:s.name};
+  } else {
+    window.STUDENT_MODE=true;
+    jset('vrd_home_stu',{cls:String(s.cls),roll:String(s.roll),gr:'',name:s.name,udise:s.udise,sid:s.sid||'',guest:!!s.guest,school:s.school||'',indep:!!s.indep||!!(CFG&&CFG.student&&!CFG.school),medium:s.medium||(CFG&&CFG.student&&CFG.student.medium)||'gu'});
+    jset('vrd_class',String(s.cls));
+  }
+  var mark=(ROLE==='board'?(s.guest?'🏫 —':'🏫 '+(s.name||'')+' · UDISE '+s.udise):(s.guest?'🙋 '+s.name:'👦 '+s.name+' · '+(s.school||s.udise)));
+  document.open(); document.write(code); document.close();
+  setTimeout(function(){ try{
+    var w=document.createElement('div');
+    w.textContent=(APP()?APP()+' · ':'')+mark;
+    w.style.cssText='position:fixed;left:8px;bottom:6px;z-index:2147483000;font:11px sans-serif;color:rgba(255,255,255,.35);pointer-events:none;letter-spacing:.3px';
+    document.body.appendChild(w);
+    document.addEventListener('contextmenu',function(e){ e.preventDefault() },true);
+    document.addEventListener('keydown',function(e){ var k=(e.key||'').toLowerCase();
+      if((e.ctrlKey||e.metaKey)&&(k==='s'||k==='u'||(e.shiftKey&&(k==='i'||k==='j'||k==='c')))) e.preventDefault(); if(k==='f12') e.preventDefault() },true);
+  }catch(e){} },2500);
+}
+if(!/^https?:\/\//.test(MASTER_URL)) screen('<div class="card"><b>⚠ માસ્ટર લિંક હજી મૂકી નથી</b><p>GitHub પર <b>config.js</b> ખોલો અને માસ્ટર શીટ → SETTINGS → MASTER WEBAPP URL ની લિંક ત્યાં પેસ્ટ કરો.</p></div>');
+else start();
+</script>
+</body>
+</html>

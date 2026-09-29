@@ -279,7 +279,7 @@ function studentScreen(){
       '<small>તમારી શાળા આ બોર્ડ ન વાપરતી હોય તો — જાતે નોંધણી કરી શીખવાનું શરૂ કરો<i>If your school does not use this board — register yourself and start learning</i></small></button>')+
     (CFG&&CFG.visitor===false?'':'<button class="choice" style="--c:#a78bfa" onclick="stuVisitor()"><div class="i">🙋</div><b>મુલાકાતી</b><em>Visitor</em>'+
       '<small>ફક્ત નામ લખી જુઓ<i>Just type your name and explore</i></small></button>')+
-    '</div></div>'+(CFG&&CFG.message?'<div class="card">📢 '+esc(CFG.message)+'</div>':'')+
+    '</div></div>'+(CFG&&CFG.message&&ROLE==='board'?'<div class="card">📢 '+esc(CFG.message)+'</div>':'')+
     '<p class="note">© '+esc(APP())+'</p>');
 }
 function udiseRow(){ return '<label>શાળાનો UDISE કોડ (11 અંક) · School UDISE code</label><input id="u" inputmode="numeric" maxlength="11" value="'+esc((jget('fg_last_udise','')||''))+'">'+

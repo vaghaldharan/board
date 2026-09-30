@@ -108,7 +108,7 @@ function start(){
     start.__bg=1;
     return cacheGet(function(c){
       if(!(c && c.code)) { start.__bg=2; return start() }
-      jp('boot',{udise:s.udise,tok:s.tok,sid:s.sid},function(b){
+      jp('boot',{udise:s.udise,tok:s.tok,stid:s.sid},function(b){
         if(!(b && b.ok)) return;
         jset(CKEY,b);
         if((ROLE==='board' && !s.guest && b.teacher===false) || (b.school && b.school.status==='BLOCKED')){ jset(SKEY,null) }   /* next open asks again */
@@ -125,7 +125,7 @@ function start(){
     });
   }
   loading('જોડાય છે… · Connecting…');
-  jp('boot', s?{udise:s.udise, tok:s.tok, sid:s.sid}:{}, function(b){
+  jp('boot', s?{udise:s.udise, tok:s.tok, stid:s.sid}:{}, function(b){
     if(b && b.ok){ CFG=b; jset(CKEY,b) }
     else if(!CFG){ screen('<div class="card"><b>⚠ '+esc(em(b))+'</b><button class="btn" onclick="start()">↻ ફરી</button></div>'); return }
     if(ROLE==='board'){
